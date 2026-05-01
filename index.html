@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Finder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FFF9FA;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      color: #2D1B22;
+      margin-bottom: 0.25rem;
+    }
+
+    .sub {
+      color: #999;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border: 1px solid #fce4ec;
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 0.875rem;
+      color: #2D1B22;
+    }
+
+    .search-box input::placeholder {
+      color: #ccc;
+    }
+
+    .search-box .clear-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .cats {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cats::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-btn {
+      white-space: nowrap;
+      font-size: 0.75rem;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid #fce4ec;
+      background: white;
+      cursor: pointer;
+      color: #999;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.active {
+      background: #E639AF;
+      color: white;
+      border-color: #E639AF;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .recipe-card {
+      background: white;
+      border: 1.5px solid #fce4ec;
+      border-radius: 18px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      position: relative;
+    }
+
+    .recipe-card:hover {
+      border-color: #E639AF;
+    }
+
+    .recipe-card .fav-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .recipe-card .emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .recipe-card h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2D1B22;
+      margin-bottom: 0.35rem;
+    }
+
+    .recipe-card .meta {
+      font-size: 0.75rem;
+      color: #bbb;
+    }
+
+    .empty {
+      grid-column: span 2;
+      text-align: center;
+      padding: 3rem;
+      color: #ccc;
+      font-size: 0.875rem;
+    }
+
+    /* Detail view */
+    .detail {
+      display: none;
+    }
+
+    .detail.show {
+      display: block;
+    }
+
+    .grid-view {}
+
+    .grid-view.hide {
+      display: none;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #E639AF;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-card {
+      background: #2D1B22;
+      border-radius: 24px;
+      padding: 1.75rem;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .detail-card .d-emoji {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .detail-card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .detail-card .d-meta {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .detail-card .d-meta span {
+      color: #f9a8d4;
+      font-size: 0.875rem;
+    }
+
+    .section-box {
+      background: white;
+      border: 1px solid #fce4ec;
+      border-radius: 18px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-box h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #2D1B22;
+      margin-bottom: 0.85rem;
+    }
+
+    .ing-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .ing {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.75rem;
+      background: #fce4ec;
+      color: #E639AF;
+      border-radius: 999px;
+      border: 1px solid #fbcfe8;
+      text-transform: capitalize;
+    }
+
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .steps li .step-num {
+      width: 24px;
+      height: 24px;
+      background: #E639AF;
+      color: white;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .steps li p {
+      font-size: 0.875rem;
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Grid view -->
+    <div class="grid-view" id="gridView">
+      <h1>Recipe Finder 🍳</h1>
+      <p class="sub">Search by name or ingredient</p>
+
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="queryInput" placeholder="Search recipes or ingredients..." oninput="renderGrid()" />
+        <button class="clear-btn" onclick="clearSearch()">✕</button>
+      </div>
+
+      <div class="cats" id="cats"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- Detail view -->
+    <div class="detail" id="detail">
+      <button class="back-btn" onclick="closeDetail()">← Back to Recipes</button>
+      <div class="detail-card">
+        <span class="d-emoji" id="dEmoji"></span>
+        <h2 id="dName"></h2>
+        <div class="d-meta">
+          <span id="dTime"></span>
+          <span id="dServ"></span>
+        </div>
+      </div>
+      <div class="section-box">
+        <h3>Ingredients</h3>
+        <div class="ing-list" id="dIngs"></div>
+      </div>
+      <div class="section-box">
+        <h3>Steps</h3>
+        <ol class="steps" id="dSteps"></ol>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const RECIPES = [
+      { id: 1, name: 'Spaghetti Carbonara', cat: 'Italian', time: 20, serv: 4, ingredients: ['spaghetti', 'eggs', 'bacon', 'parmesan', 'black pepper'], emoji: '🍝', steps: ['Cook pasta al dente.', 'Fry bacon until crispy.', 'Whisk eggs with parmesan.', 'Remove pasta from heat, add bacon, then stir in egg mix quickly.', 'Season with black pepper and serve.'] },
+      { id: 2, name: 'Avocado Toast', cat: 'Breakfast', time: 10, serv: 2, ingredients: ['bread', 'avocado', 'lemon', 'salt', 'chilli flakes'], emoji: '🥑', steps: ['Toast the bread.', 'Mash avocado with lemon juice and salt.', 'Spread on toast.', 'Top with chilli flakes and enjoy.'] },
+      { id: 3, name: 'Chicken Stir Fry', cat: 'Asian', time: 25, serv: 3, ingredients: ['chicken', 'broccoli', 'soy sauce', 'garlic', 'ginger', 'oil'], emoji: '🍜', steps: ['Slice chicken thinly.', 'Stir-fry chicken in hot oil for 5 minutes.', 'Add vegetables, garlic and ginger.', 'Pour in soy sauce and toss everything.', 'Serve with rice or noodles.'] },
+      { id: 4, name: 'Banana Pancakes', cat: 'Breakfast', time: 15, serv: 2, ingredients: ['banana', 'eggs', 'oats', 'cinnamon'], emoji: '🥞', steps: ['Mash banana well.', 'Mix in beaten eggs and oats.', 'Add cinnamon to taste.', 'Cook small pancakes on medium heat, 2 minutes each side.'] },
+      { id: 5, name: 'Caesar Salad', cat: 'Salad', time: 15, serv: 2, ingredients: ['romaine lettuce', 'croutons', 'parmesan', 'caesar dressing', 'lemon'], emoji: '🥗', steps: ['Chop lettuce into chunks.', 'Toss with dressing and lemon juice.', 'Add croutons and shaved parmesan.', 'Serve immediately.'] },
+      { id: 6, name: 'Chocolate Mug Cake', cat: 'Dessert', time: 5, serv: 1, ingredients: ['flour', 'cocoa powder', 'sugar', 'egg', 'milk', 'oil', 'chocolate chips'], emoji: '🍫', steps: ['Mix all dry ingredients in a large mug.', 'Add wet ingredients and stir well.', 'Microwave for 90 seconds.', 'Top with chocolate chips and enjoy warm!'] },
+    ];
+
+    const CATS = ['All', 'Breakfast', 'Italian', 'Asian', 'Salad', 'Dessert'];
+    let activeCategory = 'All';
+    let favourites = [];
+
+    document.getElementById('cats').innerHTML = CATS.map(c =>
+      `<button class="cat-btn ${c === 'All' ? 'active' : ''}" onclick="setCategory('${c}', this)">${c}</button>`
+    ).join('');
+
+    function setCategory(cat, el) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      renderGrid();
+    }
+
+    function clearSearch() {
+      document.getElementById('queryInput').value = '';
+      renderGrid();
+    }
+
+    function toggleFav(id, e) {
+      e.stopPropagation();
+      favourites = favourites.includes(id) ? favourites.filter(x => x !== id) : [...favourites, id];
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const query = document.getElementById('queryInput').value.toLowerCase();
+      const filtered = RECIPES.filter(r => {
+        const matchQ = !query || r.name.toLowerCase().includes(query) || r.ingredients.some(i => i.includes(query));
+        const matchC = activeCategory === 'All' || r.cat === activeCategory;
+        return matchQ && matchC;
+      });
+      const grid = document.getElementById('grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="empty">No recipes found. Try a different search!</div>';
+      } else {
+        grid.innerHTML = filtered.map(r => `
+        <div class="recipe-card" onclick="openDetail(${r.id})">
+          <button class="fav-btn" onclick="toggleFav(${r.id}, event)">${favourites.includes(r.id) ? '❤️' : '🤍'}</button>
+          <span class="emoji">${r.emoji}</span>
+          <h3>${r.name}</h3>
+          <p class="meta">⏱ ${r.time} min &nbsp;·&nbsp; 👤 ${r.serv}</p>
+        </div>
+      `).join('');
+      }
+    }
+
+    function openDetail(id) {
+      const r = RECIPES.find(x => x.id === id);
+      document.getElementById('dEmoji').textContent = r.emoji;
+      document.getElementById('dName').textContent = r.name;
+      document.getElementById('dTime').textContent = `⏱ ${r.time} min`;
+      document.getElementById('dServ').textContent = `👤 ${r.serv} servings`;
+      document.getElementById('dIngs').innerHTML = r.ingredients.map(i => `<span class="ing">${i}</span>`).join('');
+      document.getElementById('dSteps').innerHTML = r.steps.map((s, i) => `<li><span class="step-num">${i + 1}</span><p>${s}</p></li>`).join('');
+      document.getElementById('gridView').classList.add('hide');
+      document.getElementById('detail').classList.add('show');
+      window.scrollTo(0, 0);
+    }
+
+    function closeDetail() {
+      document.getElementById('detail').classList.remove('show');
+      document.getElementById('gridView').classList.remove('hide');
+    }
+
+    renderGrid();
+  </script>
+</body>
+
+</html>
