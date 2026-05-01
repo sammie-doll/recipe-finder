@@ -15,7 +15,7 @@ A recipe discovery app that helps users search for meals, ingredients, and cooki
 - Recipe API
 
 ## Live Demo
-https://yourusername.github.io/recipe-finder
+https://github.com/sammie-doll/recipe-finder/edit/main/README.md
 
 ## Author
 Mulalo Nevari
